@@ -1,0 +1,225 @@
+---
+title: "Lab 2 - STAT 1150 W23"
+author: "Jenna G. Tichon"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style>
+.boxed{
+ border: 3px solid green ;
+ font-size: large;
+}
+.challenge{
+ border: 3px dashed hotpink ;
+ font-size: large;
+}
+</style>
+
+## Learning Objectives:
+- Sample from a dataset 
+- Calculate summary statistics for the centre and spread of a sample in R
+- Produce histograms and boxplots in R
+- Make cosmetic alterations to plots in R
+
+## Random Sampling
+
+ToothGrowth is a built in dataset in R, meaning typing you can use the dataset without entering in the values or loading it. Type ToothGrowth into R and see what comes up.
+
+```{r}
+#Show dataframe, using the head() command only display the first six lines
+head(ToothGrowth)
+```
+
+If we consider this to be a population, we can use the <tt>sample()</tt> function in R to draw samples and see how each randomly selected subset is different.
+
+First let's see what the population's distribution looks like:
+
+```{r}
+# Use the $ to retrieve the len column from the ToothGrowth data set and assign it to a vector called len
+
+len<-ToothGrowth$len
+len
+
+# Basic Histogram of Data set
+hist(len)
+```
+
+Now let's sample. <tt>sample(x, n, replace = )</tt> will use the data set x, take samples of size n and then you can set replace to TRUE or FALSE to sample with or without replacement.
+
+```{r}
+# Take a sample of size 15
+len.sample15<-sample(len, 15, replace=FALSE)
+hist(len.sample15)
+```
+
+Run that R code a few more times and notice how every one is different.
+
+Now do that for samples of size 30 and run the code a few times.
+
+```{r}
+# Take samples of size 30
+len.sample30<-sample(len, 30, replace=FALSE)
+hist(len.sample30)
+```
+
+<div class=boxed>
+*Q*: What's different about the histograms in the samples of size 15 vs the samples of size 30?
+</div>
+
+## Summary Statistics and Labeling on Graphs
+
+Let's look at making some description of various datasets with graphics and descriptive statistics of centre and spread we learned in unit 1.
+
+### Red Light Camera Tickets
+
+This dataset records the number of red light tickets at an intersection over a month
+
+```{r}
+#Number of red light camera tickets
+x1<-c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,3,3,4,5,5)
+```
+
+We can calculate basic summary statistics:
+
+```{r}
+#Basic Summary Statistics
+mean(x1)
+median(x1)
+var(x1)
+sd(x1)
+fivenum(x1)
+```
+
+We can also make a histogram using the <tt>hist()</tt> function:
+```{r}
+hist(x1, breaks=c(0,1,2,3,4,5,6), right=FALSE, 
+     main="Number of Red Lights", xlab="Number of Tickets")
+```
+
+The optional arguments are:
+
+- **breaks** : specifies the exact numbers where we put the class bounds
+- **right** : logical (TRUE/FALSE) to denote if we include the right end points
+- **main** : give the plot a title
+- **xlab** : changes label on the x-axis
+- **ylab**: we didn't use this but it would change the label on the y-axis
+
+<div class = boxed>
+Why is this not an appropriate graph?
+</div>
+
+We can also make a boxplot using the \textt{boxplot()} command. Adding the optional argument \texttt{horizontal=TRUE} puts the plot horizontally like we draw them normally in class. (*Hint*: You can type ?boxplot in the console to get the help function to see other optional arguments. Can you figure out at home how to eliminate the horizontal lines on the ends of the whiskers?)
+
+```{r}
+# Make boxplot positioned vertically
+boxplot(x1)
+
+# Make a boxplot positioned horizontally
+boxplot(x1, horizontal=TRUE)
+```
+
+### Salaries
+
+For this dataset, we'll look at the salaries at a company in thousands of dollars. First, let's calculate our summary statistics:
+
+```{r}
+x2<-c(24, 24, 25, 25, 26, 26, 26, 27, 27, 27, 32, 32, 32, 33, 33, 33, 
+      33, 34, 34, 36, 36, 37, 37, 45, 46, 46, 60, 89, 90, 90, 120)
+mean(x2)
+median(x2)
+```
+
+Now, let's do a little more in R to try to label these two statistics on the histogram.
+
+```{r}
+# Make histogram. Explain breaks and ylim (used to make room for labels)
+hist(x2, breaks=10, ylim=c(0,17), main="Salaries in thousands of $")
+# Add in line labels for mean and median to find best measure
+abline(v=mean(x2), col="red")
+abline(v=median(x2), col="blue")
+# Label lines with text legend. srt rotates the text by that many 
+# degrees counter clockwise
+text(38, 15, "Mean", col="red", srt=90)
+text(28, 15.5, "Median", col="blue", srt=90)
+```
+
+<div class = boxed>
+Which measurement is the better descriptor? Why is this the case?
+</div>
+
+Here are the tricks we used in this plot:
+
+- **breaks** : In the <tt>hist()</tt> command, we used the <tt>breaks</tt> option again but put in a number instead of specifying a vector where we put the breaks. This will tell R how wide to make the intervals. Our graph has intervals that are 10 wide.
+Text uses x and y co-ordinate. Can use the command locator(1) to try to find the approximate correct spot for the center of the label.
+- **ylim** : This takes a vector that specifies where the graph starts and ends in the vertical direction. I explicitly used this to make the graph taller so that I'd have room to include the labels.  
+- **abline** : This lets you put lines on your plot. Type <tt>?abline</tt> in R to see the different options you have for making lines.
+- **v** : Using the v options in <tt>abline</tt> specifies you want a vertical line at the specified x co-ordinate.
+- **col** : Specifies the line color
+- **text** : This adds text to your graph. 
+  - The first two numbers are the xy-coordinates of the center of the text (see below for finding it!) 
+  - The next option is the text you want (put in quotation marks). 
+  - <tt>col</tt> is an optional argument specifying the text color. 
+  - <tt>srt</tt> is an optional argument that specifies how many degrees counterclockwise to rotate the text.
+  
+If you ever need to find xy-coordinates in a graph (they aren't what you might expect them to be), you should make the graph and then you can type locator(1) in the console. This will change your cursor into a plus symbol. Do this now and click the center of the word Mean. This should give you a coordinate close to (38,15) like I put in the code.
+
+### Bridge scores 
+
+This data set is a list of bridge scores at a game I played in at the Kirkfield Westwood bridge clubs. Scores are expressed as a percentage of total possible points available. (Aside: 50\% is an average score. 60\%+ is a very good score. Under 40\% is a pretty terrible score.) First we can calculate the summary statistics.
+
+```{r}
+x3<-c(35.30, 41.01, 41.76, 43.34, 46.65, 51.43, 52.09, 57.30, 59.25, 
+      60.53, 60.70,42.98,45.24,45.85,46.23,50.30,50.71,52.85,53.47,56.44)
+mean(x3)
+median(x3)
+```
+
+<div class = boxed>
+Notice that the values are pretty close for the mean and median. What does that tell us about the graph?
+</div>
+
+Let's take a look at them labeled on the graph.
+```{r}
+hist(x3, main="Bridge Scores")
+# Add in line labels for mean and median to find best measure
+abline(v=mean(x3), col="red")
+abline(v=median(x3), col="blue")
+```
+
+### Customizing histograms
+
+There are many ways to change the appearance of the histogram. Some of them are changing the actual graph (such as specifying breaks) and some are purely cosmetic (such as changing colours). To find optional arguments for changing the histogram, you can type <tt>?hist</tt> in the console. To find optional argument for cosmetic changes, you can type <tt>?par</tt> in the console. Try doing this now.
+
+This is not an example of a good looking graph below, it is fairly distracting, but below I've shown some of the cosmetic changes you can make to your graph:
+
+```{r}
+hist(x3, main = "Bridge Scores", col="mistyrose1", cex.axis=1.2, col.axis="slateblue2",
+     col.lab="olivedrab", col.main="plum4", family="HersheyGothicItalian", lty="dotdash")
+```
+
+These are the optional arguments I used:
+
+- **col** : This changes the bar colour.
+- **cex.axis** : This is a scaling factor to increase or decreased font size.
+- **col.axis** : This changes the colours at the tick marks.
+- **col.lab** : This changes the colour of the axis labels.
+- **col.main** : This changes the colour of the title.
+- **family** : This changes the font.
+- **lty** : This changes the line type of any solid lines in the graph.
+
+For a list of useable fonts in R you can reference this page from <a href= https://astrostatistics.psu.edu/su07/R/html/grDevices/html/Hershey.html> Astrostatistics</a>
+
+For a list of colours, you can type <tt>colors()</tt> into the console. If you would like to see the colours, you can find a list at <a href=https://www.datanovia.com/en/blog/awesome-list-of-657-r-color-names/ > Datanovia</a>
+
+Try your self to change some some colours and the font family on my histogram. If you're feeling adventurous, look up the options for lty by entering <tt>?par</tt> in the console and choosing a different option listed in the help page. 
+
+<div class = challenge>
+**At home challenge**: Take my base graph hist(x3) and try to make the most distracting, weird, and not appropriate for publication graph you can by using optional arguments and post your graph on the discussion forum. You can paste your code in the post and/or include an image. You can can save a picture of your graph by clicking on the "Export" button above your graph in R Studio.
+</div>
+
